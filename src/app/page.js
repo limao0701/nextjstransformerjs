@@ -1,6 +1,23 @@
 import Image from "next/image";
+import { pipeline } from '@huggingface/transformers';
+import { AutoTokenizer } from '@huggingface/transformers';
+import  similarity from'compute-cosine-similarity'
 
-export default function Home() {
+export default async function Home() {
+  const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+  const tokenizer = await AutoTokenizer.from_pretrained('Xenova/all-MiniLM-L6-v2');
+
+// Compute sentence embeddings
+  const sentences = ['This is an example sentence', 'Each sentence is converted',
+    'I love transformers!','I like transformers','Transformers is verify cool'
+  ];
+  const output = await extractor(sentences, { pooling: 'mean', normalize: true });
+  console.log(output);
+  const { input_ids } = await tokenizer('I love transformers!');
+  console.log(output);
+  var out_vectors = output.tolist()
+  var s = similarity( out_vectors[3], out_vectors[3]);
+  console.log(s);
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
